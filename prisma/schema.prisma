@@ -431,3 +431,23 @@ enum PageStatus {
   DRAFT
   PUBLISHED
 }
+
+// ─────────────────────────────────────────────
+// Cài đặt chung của site (bảng đơn dòng — id luôn là "singleton"):
+// layout header/footer, hotline, chatbox Zalo/Messenger nổi.
+// ─────────────────────────────────────────────
+
+model SiteSettings {
+  id                String   @id @default("singleton")
+  logoUrl           String?
+  footerDescription String?
+  socialFacebook    String?
+  socialYoutube     String?
+  socialZalo        String?
+  hotlineEnabled    Boolean  @default(false)
+  hotlinePhone      String?
+  chatWidgetEnabled Boolean  @default(false)
+  zaloChatUrl       String?
+  messengerChatUrl  String?
+  updatedAt         DateTime @updatedAt
+}

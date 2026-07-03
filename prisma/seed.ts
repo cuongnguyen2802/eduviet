@@ -1072,6 +1072,23 @@ async function main() {
     }
   }
 
+  // ── Cài đặt chung: hotline header + chatbox Zalo/Messenger nổi + social footer ──
+  await prisma.siteSettings.upsert({
+    where: { id: "singleton" },
+    update: {},
+    create: {
+      id: "singleton",
+      hotlineEnabled: true,
+      hotlinePhone: "1900 1234",
+      chatWidgetEnabled: true,
+      zaloChatUrl: "https://zalo.me/1900123456",
+      messengerChatUrl: "https://m.me/eduviet",
+      socialFacebook: "https://facebook.com/eduviet",
+      socialYoutube: "https://youtube.com/@eduviet",
+      socialZalo: "https://zalo.me/1900123456",
+    },
+  });
+
   console.log({
     categories: categories.length,
     instructors: [instructor, instructor2, instructor3, instructor4, instructor5, instructor6].map((i) => i.email),

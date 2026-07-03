@@ -1,6 +1,8 @@
 import Link from "next/link";
-import { GraduationCap, Facebook, Youtube, Instagram } from "lucide-react";
+import { Facebook, Youtube, MessageCircle } from "lucide-react";
 import { prisma } from "@/lib/prisma";
+import { getSiteSettings } from "@/lib/site-settings";
+import { SiteLogo } from "@/components/layout/site-logo";
 
 async function getCategoryTree() {
   return prisma.category.findMany({
@@ -11,7 +13,7 @@ async function getCategoryTree() {
 }
 
 export async function Footer() {
-  const categories = await getCategoryTree();
+  const [categories, settings] = await Promise.all([getCategoryTree(), getSiteSettings()]);
 
   return (
     <footer className="border-t">
@@ -47,24 +49,27 @@ export async function Footer() {
       <div className="bg-secondary/40">
         <div className="container grid gap-8 py-12 md:grid-cols-5">
           <div className="md:col-span-2">
-            <Link href="/" className="flex items-center gap-2 font-bold text-lg">
-              <GraduationCap className="h-6 w-6 text-primary" />
-              EduViet
-            </Link>
-            <p className="mt-3 max-w-xs text-sm text-muted-foreground">
-              Nền tảng học trực tuyến hàng đầu Việt Nam — mua trọn đời, học theo tốc độ của riêng bạn.
-            </p>
-            <div className="mt-4 flex gap-3 text-muted-foreground">
-              <Link href="#" aria-label="Facebook" className="hover:text-primary">
-                <Facebook className="h-5 w-5" />
-              </Link>
-              <Link href="#" aria-label="Youtube" className="hover:text-primary">
-                <Youtube className="h-5 w-5" />
-              </Link>
-              <Link href="#" aria-label="Instagram" className="hover:text-primary">
-                <Instagram className="h-5 w-5" />
-              </Link>
-            </div>
+            <SiteLogo logoUrl={settings.logoUrl} />
+            <p className="mt-3 max-w-xs text-sm text-muted-foreground">{settings.footerDescription}</p>
+            {(settings.socialFacebook || settings.socialYoutube || settings.socialZalo) && (
+              <div className="mt-4 flex gap-3 text-muted-foreground">
+                {settings.socialFacebook && (
+                  <Link href={settings.socialFacebook} target="_blank" aria-label="Facebook" className="hover:text-primary">
+                    <Facebook className="h-5 w-5" />
+                  </Link>
+                )}
+                {settings.socialYoutube && (
+                  <Link href={settings.socialYoutube} target="_blank" aria-label="Youtube" className="hover:text-primary">
+                    <Youtube className="h-5 w-5" />
+                  </Link>
+                )}
+                {settings.socialZalo && (
+                  <Link href={settings.socialZalo} target="_blank" aria-label="Zalo" className="hover:text-primary">
+                    <MessageCircle className="h-5 w-5" />
+                  </Link>
+                )}
+              </div>
+            )}
           </div>
 
           <div>
@@ -89,10 +94,8 @@ export async function Footer() {
           <div>
             <p className="font-semibold mb-3">Công ty</p>
             <ul className="space-y-2 text-sm text-muted-foreground">
-              <li>Về chúng tôi</li>
-              <li>Liên hệ</li>
-              <li>Điều khoản sử dụng</li>
-              <li>Chính sách bảo mật</li>
+              <li><Link href="/gioi-thieu" className="hover:text-primary">Về chúng tôi</Link></li>
+              <li><Link href="/lien-he" className="hover:text-primary">Liên hệ</Link></li>
             </ul>
           </div>
         </div>

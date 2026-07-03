@@ -13,6 +13,7 @@ import {
   Newspaper,
   Images,
   FileText,
+  Settings,
 } from "lucide-react";
 import { getCurrentUser } from "@/lib/auth";
 import { Header } from "@/components/layout/header";
@@ -32,6 +33,7 @@ const links = [
   { href: "/admin/media", label: "Thư viện ảnh", icon: <Images className="h-4 w-4" /> },
   { href: "/admin/coupons", label: "Coupon", icon: <Ticket className="h-4 w-4" /> },
   { href: "/admin/withdrawals", label: "Duyệt rút tiền", icon: <Wallet className="h-4 w-4" /> },
+  { href: "/admin/settings", label: "Cài đặt chung", icon: <Settings className="h-4 w-4" /> },
 ];
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
