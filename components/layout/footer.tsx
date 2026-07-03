@@ -47,7 +47,32 @@ export async function Footer() {
       )}
 
       <div className="border-t border-slate-800 bg-slate-900">
-        <div className="container grid grid-cols-2 gap-8 py-12 sm:grid-cols-4">
+        <div className="container grid grid-cols-2 gap-x-8 gap-y-10 py-12 sm:grid-cols-3 lg:grid-cols-5">
+          <div>
+            <p className="font-semibold mb-3 text-white">Giới thiệu công ty</p>
+            <SiteLogo logoUrl={settings.logoUrl} className="mb-3 flex items-center gap-2 text-base font-bold text-white" />
+            <p className="mb-3 text-sm text-slate-400">{settings.footerDescription}</p>
+            {(settings.socialFacebook || settings.socialYoutube || settings.socialZalo) && (
+              <div className="flex gap-3 text-slate-400">
+                {settings.socialFacebook && (
+                  <Link href={settings.socialFacebook} target="_blank" aria-label="Facebook" className="hover:text-primary">
+                    <Facebook className="h-5 w-5" />
+                  </Link>
+                )}
+                {settings.socialYoutube && (
+                  <Link href={settings.socialYoutube} target="_blank" aria-label="Youtube" className="hover:text-primary">
+                    <Youtube className="h-5 w-5" />
+                  </Link>
+                )}
+                {settings.socialZalo && (
+                  <Link href={settings.socialZalo} target="_blank" aria-label="Zalo" className="hover:text-primary">
+                    <MessageCircle className="h-5 w-5" />
+                  </Link>
+                )}
+              </div>
+            )}
+          </div>
+
           <div>
             <p className="font-semibold mb-3 text-white">Học viên</p>
             <ul className="space-y-2 text-sm text-slate-400">
@@ -88,38 +113,9 @@ export async function Footer() {
       </div>
 
       <div className="border-t border-slate-800 bg-slate-900">
-        <div className="container flex flex-col items-center gap-4 py-6 sm:flex-row sm:justify-between">
-          <div className="flex flex-col items-center gap-3 sm:items-start">
-            <SiteLogo logoUrl={settings.logoUrl} className="flex items-center gap-2 font-bold text-lg text-white" />
-            <p className="max-w-xs text-center text-xs text-slate-400 sm:text-left">{settings.footerDescription}</p>
-          </div>
-
-          <div className="flex flex-col items-center gap-3 sm:items-end">
-            {(settings.socialFacebook || settings.socialYoutube || settings.socialZalo) && (
-              <div className="flex gap-3 text-slate-400">
-                {settings.socialFacebook && (
-                  <Link href={settings.socialFacebook} target="_blank" aria-label="Facebook" className="hover:text-primary">
-                    <Facebook className="h-5 w-5" />
-                  </Link>
-                )}
-                {settings.socialYoutube && (
-                  <Link href={settings.socialYoutube} target="_blank" aria-label="Youtube" className="hover:text-primary">
-                    <Youtube className="h-5 w-5" />
-                  </Link>
-                )}
-                {settings.socialZalo && (
-                  <Link href={settings.socialZalo} target="_blank" aria-label="Zalo" className="hover:text-primary">
-                    <MessageCircle className="h-5 w-5" />
-                  </Link>
-                )}
-              </div>
-            )}
-            <div className="flex items-center gap-3 text-xs text-slate-500">
-              <p>© {new Date().getFullYear()} EduViet. All rights reserved.</p>
-              <span>•</span>
-              <p>Made in Việt Nam</p>
-            </div>
-          </div>
+        <div className="container flex flex-col items-center gap-2 py-5 text-xs text-slate-500 sm:flex-row sm:justify-between">
+          <p>© {new Date().getFullYear()} EduViet. All rights reserved.</p>
+          <p>Made in Việt Nam</p>
         </div>
       </div>
     </footer>
