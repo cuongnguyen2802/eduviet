@@ -405,3 +405,29 @@ model MediaAsset {
 
   @@index([uploadedById])
 }
+
+// ─────────────────────────────────────────────
+// Quản lý trang tĩnh (UX Builder kéo-thả): Giới thiệu, Liên hệ, trang tùy chỉnh...
+// Trang chủ ("trang-chu") là trang hệ thống đặc biệt — không route riêng, chỉ dùng để
+// chèn thêm khối tùy chỉnh (slot "top"/"bottom") quanh các phần động sẵn có của "/".
+// ─────────────────────────────────────────────
+
+model Page {
+  id              String     @id @default(cuid())
+  title           String
+  slug            String     @unique
+  status          PageStatus @default(DRAFT)
+  isSystemPage    Boolean    @default(false)
+  metaTitle       String?
+  metaDescription String?
+  blocks          Json       @default("[]")
+  createdAt       DateTime   @default(now())
+  updatedAt       DateTime   @updatedAt
+
+  @@index([status])
+}
+
+enum PageStatus {
+  DRAFT
+  PUBLISHED
+}

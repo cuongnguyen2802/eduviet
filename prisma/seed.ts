@@ -962,11 +962,122 @@ async function main() {
     }
   }
 
+  // ── Trang tĩnh (UX Builder kéo-thả): trang chủ (chèn khối), Giới thiệu, Liên hệ ──
+  const systemPageDefs = [
+    {
+      slug: "trang-chu",
+      title: "Trang chủ",
+      metaTitle: null as string | null,
+      metaDescription: null as string | null,
+      blocks: [
+        {
+          id: "home-cta-1",
+          type: "cta",
+          slot: "bottom",
+          props: {
+            title: "Bạn là chuyên gia trong lĩnh vực của mình?",
+            subtitle: "Chia sẻ kiến thức và tạo thu nhập thụ động bằng cách trở thành giảng viên trên EduViet.",
+            buttonLabel: "Đăng ký giảng dạy",
+            buttonHref: "/become-instructor",
+            style: "dark",
+          },
+        },
+      ],
+    },
+    {
+      slug: "gioi-thieu",
+      title: "Giới thiệu",
+      metaTitle: "Giới thiệu về EduViet",
+      metaDescription: "EduViet là nền tảng học trực tuyến hàng đầu Việt Nam, kết nối học viên với giảng viên chất lượng.",
+      blocks: [
+        {
+          id: "about-hero",
+          type: "hero",
+          props: {
+            title: "Về EduViet",
+            subtitle: "Nền tảng học trực tuyến giúp hàng nghìn người Việt nâng cao kỹ năng mỗi ngày.",
+            imageUrl: "",
+            ctaLabel: "Khám phá khóa học",
+            ctaHref: "/courses",
+            variant: "dark",
+          },
+        },
+        {
+          id: "about-content",
+          type: "richtext",
+          props: {
+            html:
+              "<p>EduViet ra đời với sứ mệnh giúp mọi người Việt Nam có thể tiếp cận kiến thức và kỹ năng chất lượng cao với chi phí hợp lý, học theo tốc độ của riêng mình.</p><p>Chúng tôi hợp tác với các giảng viên, chuyên gia hàng đầu trong nhiều lĩnh vực — từ marketing, thiết kế, lập trình đến ngoại ngữ và kỹ năng mềm — để mang đến những khóa học thực chiến, dễ hiểu và áp dụng được ngay.</p><p>Mỗi khóa học trên EduViet đều được đội ngũ admin xét duyệt kỹ lưỡng trước khi xuất bản, đảm bảo chất lượng nội dung cho học viên.</p>",
+          },
+        },
+        {
+          id: "about-features",
+          type: "features",
+          props: {
+            title: "Giá trị cốt lõi",
+            items: [
+              { icon: "ShieldCheck", title: "Chất lượng", description: "Mọi khóa học đều qua admin kiểm duyệt." },
+              { icon: "Users", title: "Cộng đồng", description: "Kết nối học viên và giảng viên qua hỏi đáp." },
+              { icon: "TrendingUp", title: "Thực chiến", description: "Nội dung áp dụng được ngay vào công việc." },
+              { icon: "Heart", title: "Tận tâm", description: "Hỗ trợ học viên xuyên suốt quá trình học." },
+            ],
+          },
+        },
+      ],
+    },
+    {
+      slug: "lien-he",
+      title: "Liên hệ",
+      metaTitle: "Liên hệ với EduViet",
+      metaDescription: "Thông tin liên hệ EduViet — hotline, email hỗ trợ và địa chỉ văn phòng.",
+      blocks: [
+        {
+          id: "contact-hero",
+          type: "hero",
+          props: {
+            title: "Liên hệ với chúng tôi",
+            subtitle: "Đội ngũ EduViet luôn sẵn sàng hỗ trợ bạn.",
+            imageUrl: "",
+            ctaLabel: "",
+            ctaHref: "",
+            variant: "light",
+          },
+        },
+        {
+          id: "contact-info",
+          type: "richtext",
+          props: {
+            html:
+              "<p><strong>Email hỗ trợ:</strong> support@eduviet.vn</p><p><strong>Hotline:</strong> 1900 1234 (8:00 - 21:00 các ngày trong tuần)</p><p><strong>Địa chỉ văn phòng:</strong> Tầng 5, Tòa nhà ABC, Quận 1, TP. Hồ Chí Minh</p>",
+          },
+        },
+      ],
+    },
+  ];
+
+  for (const def of systemPageDefs) {
+    const existing = await prisma.page.findUnique({ where: { slug: def.slug } });
+    if (!existing) {
+      await prisma.page.create({
+        data: {
+          title: def.title,
+          slug: def.slug,
+          status: "PUBLISHED",
+          isSystemPage: true,
+          metaTitle: def.metaTitle,
+          metaDescription: def.metaDescription,
+          blocks: def.blocks,
+        },
+      });
+    }
+  }
+
   console.log({
     categories: categories.length,
     instructors: [instructor, instructor2, instructor3, instructor4, instructor5, instructor6].map((i) => i.email),
     students: [student1.email, student2.email],
     realAccountLinked: !!me,
+    pages: systemPageDefs.map((p) => p.slug),
     courses: [
       courseA,
       courseB,

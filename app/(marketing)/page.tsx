@@ -4,6 +4,8 @@ import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { CourseCard } from "@/components/course/course-card";
 import { HeroSlider } from "@/components/marketing/hero-slider";
+import { BlockList } from "@/components/page-builder/block-renderer";
+import type { PageBlock } from "@/lib/blocks";
 import {
   ArrowRight,
   BookOpen,
@@ -98,6 +100,19 @@ async function getStats() {
   };
 }
 
+// "trang-chu" là trang hệ thống trong UX Builder — chỉ dùng để admin chèn thêm khối tùy chỉnh
+// (banner, CTA, văn bản...) phía trên/dưới các phần động sẵn có của trang chủ, không thay thế chúng.
+async function getHomepageCustomBlocks() {
+  const page = await prisma.page.findUnique({ where: { slug: "trang-chu", status: "PUBLISHED" } });
+  if (!page) return { top: [] as PageBlock[], bottom: [] as PageBlock[] };
+
+  const blocks = page.blocks as unknown as PageBlock[];
+  return {
+    top: blocks.filter((b) => b.slot === "top"),
+    bottom: blocks.filter((b) => b.slot !== "top"),
+  };
+}
+
 async function getFeaturedInstructors() {
   const instructors = await prisma.user.findMany({
     where: { role: "INSTRUCTOR" },
@@ -153,16 +168,19 @@ const benefits = [
 ];
 
 export default async function HomePage() {
-  const [courses, categories, stats, instructors, heroImages] = await Promise.all([
+  const [courses, categories, stats, instructors, heroImages, customBlocks] = await Promise.all([
     getFeaturedCourses(),
     getCategories(),
     getStats(),
     getFeaturedInstructors(),
     getHeroImages(),
+    getHomepageCustomBlocks(),
   ]);
 
   return (
     <div>
+      <BlockList blocks={customBlocks.top} />
+
       <section className="relative overflow-hidden bg-secondary/30">
         <HeroSlider images={heroImages} />
         <div className="container relative z-10 grid min-h-[420px] gap-8 py-20 md:grid-cols-2 items-center">
@@ -304,6 +322,8 @@ export default async function HomePage() {
           </div>
         </div>
       </section>
+
+      <BlockList blocks={customBlocks.bottom} />
     </div>
   );
 }

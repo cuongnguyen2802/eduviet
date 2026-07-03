@@ -130,10 +130,12 @@ export function RichTextEditor({
   name,
   defaultValue,
   placeholder,
+  onChange,
 }: {
-  name: string;
+  name?: string;
   defaultValue?: string | null;
   placeholder?: string;
+  onChange?: (html: string) => void;
 }) {
   const [html, setHtml] = useState(defaultValue ?? "");
   const [pickerOpen, setPickerOpen] = useState(false);
@@ -148,7 +150,11 @@ export function RichTextEditor({
     ],
     content: defaultValue || "",
     immediatelyRender: false,
-    onUpdate: ({ editor }) => setHtml(editor.getHTML()),
+    onUpdate: ({ editor }) => {
+      const next = editor.getHTML();
+      setHtml(next);
+      onChange?.(next);
+    },
     editorProps: {
       attributes: {
         class: "prose prose-sm sm:prose-base max-w-none min-h-[240px] px-3 py-3 focus:outline-none",
@@ -158,7 +164,7 @@ export function RichTextEditor({
 
   return (
     <div className="rounded-md border">
-      <input type="hidden" name={name} value={html} />
+      {name && <input type="hidden" name={name} value={html} />}
       {editor && (
         <>
           <Toolbar editor={editor} onOpenPicker={() => setPickerOpen(true)} />

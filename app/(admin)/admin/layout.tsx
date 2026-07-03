@@ -12,6 +12,7 @@ import {
   Menu,
   Newspaper,
   Images,
+  FileText,
 } from "lucide-react";
 import { getCurrentUser } from "@/lib/auth";
 import { Header } from "@/components/layout/header";
@@ -26,6 +27,7 @@ const links = [
   { href: "/admin/categories", label: "Danh mục", icon: <Tag className="h-4 w-4" /> },
   { href: "/admin/tags", label: "Tag khóa học", icon: <Tags className="h-4 w-4" /> },
   { href: "/admin/menu", label: "Menu chính", icon: <Menu className="h-4 w-4" /> },
+  { href: "/admin/pages", label: "Quản lý trang", icon: <FileText className="h-4 w-4" /> },
   { href: "/admin/blog", label: "Blog", icon: <Newspaper className="h-4 w-4" /> },
   { href: "/admin/media", label: "Thư viện ảnh", icon: <Images className="h-4 w-4" /> },
   { href: "/admin/coupons", label: "Coupon", icon: <Ticket className="h-4 w-4" /> },
