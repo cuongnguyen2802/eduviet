@@ -781,6 +781,41 @@ async function main() {
       comment: "Giảng viên nhiệt tình, nội dung sát thực tế. Mong có thêm bài tập thực hành.",
     },
   });
+  await prisma.review.upsert({
+    where: { userId_courseId: { userId: student1.id, courseId: courseF.id } },
+    update: {},
+    create: {
+      userId: student1.id,
+      courseId: courseF.id,
+      rating: 5,
+      comment:
+        "Khóa SEO này giúp mình hiểu rõ toàn bộ quy trình audit kỹ thuật, chỉ sau 2 tháng áp dụng website công ty đã lên top 5 Google với nhiều từ khóa quan trọng.",
+    },
+  });
+  await prisma.review.upsert({
+    where: { userId_courseId: { userId: student2.id, courseId: courseI.id } },
+    update: {},
+    create: {
+      userId: student2.id,
+      courseId: courseI.id,
+      rating: 5,
+      comment:
+        "Nội dung UI/UX rất bài bản, từ nghiên cứu người dùng đến wireframe. Nhờ khóa học này mình tự tin ứng tuyển vị trí UI/UX Designer đầu tiên.",
+    },
+  });
+  if (me) {
+    await prisma.review.upsert({
+      where: { userId_courseId: { userId: me.id, courseId: courseK.id } },
+      update: {},
+      create: {
+        userId: me.id,
+        courseId: courseK.id,
+        rating: 5,
+        comment:
+          "Khóa React này thực chiến hơn hẳn các tài liệu mình từng đọc. Giảng viên giải thích Hooks rất dễ hiểu, mình đã build được dự án cá nhân ngay sau khi học xong.",
+      },
+    });
+  }
 
   // ── Wishlist ──────────────────────────────────────────────
   await prisma.wishlist.upsert({

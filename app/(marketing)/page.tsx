@@ -21,6 +21,7 @@ import {
   Palette,
   Monitor,
   Languages,
+  Quote,
   type LucideIcon,
 } from "lucide-react";
 
@@ -144,6 +145,24 @@ async function getFeaturedInstructors() {
     .sort((a, b) => b.studentCount - a.studentCount);
 }
 
+async function getTestimonials() {
+  const reviews = await prisma.review.findMany({
+    where: { rating: { gte: 4 }, comment: { not: null } },
+    include: { user: true, course: true },
+    orderBy: [{ rating: "desc" }, { createdAt: "desc" }],
+    take: 4,
+  });
+
+  return reviews.map((r) => ({
+    id: r.id,
+    comment: r.comment!,
+    userName: r.user.name,
+    userAvatarUrl: r.user.avatarUrl,
+    courseTitle: r.course.title,
+    courseSlug: r.course.slug,
+  }));
+}
+
 const benefits = [
   {
     icon: InfinityIcon,
@@ -168,13 +187,14 @@ const benefits = [
 ];
 
 export default async function HomePage() {
-  const [courses, categories, stats, instructors, heroImages, customBlocks] = await Promise.all([
+  const [courses, categories, stats, instructors, heroImages, customBlocks, testimonials] = await Promise.all([
     getFeaturedCourses(),
     getCategories(),
     getStats(),
     getFeaturedInstructors(),
     getHeroImages(),
     getHomepageCustomBlocks(),
+    getTestimonials(),
   ]);
 
   return (
@@ -298,6 +318,41 @@ export default async function HomePage() {
               </div>
             ))}
           </div>
+        </section>
+      )}
+
+      {testimonials.length > 0 && (
+        <section className="container py-14">
+          <h2 className="text-2xl font-bold mb-10">
+            Hãy cùng tham gia với những học viên đang thay đổi sự nghiệp của họ thông qua việc học tập
+          </h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {testimonials.map((t) => (
+              <div key={t.id} className="flex flex-col rounded-lg border p-6">
+                <Quote className="h-6 w-6 text-primary shrink-0" />
+                <p className="mt-3 flex-1 text-sm text-muted-foreground line-clamp-6">{t.comment}</p>
+                <div className="mt-5 flex items-center gap-3">
+                  <Avatar className="h-9 w-9">
+                    {t.userAvatarUrl && <AvatarImage src={t.userAvatarUrl} alt={t.userName} />}
+                    <AvatarFallback>{t.userName.slice(0, 2).toUpperCase()}</AvatarFallback>
+                  </Avatar>
+                  <div className="min-w-0">
+                    <p className="text-sm font-medium">{t.userName}</p>
+                    <p className="truncate text-xs text-muted-foreground">Đã hoàn thành {t.courseTitle}</p>
+                  </div>
+                </div>
+                <Link
+                  href={`/courses/${t.courseSlug}`}
+                  className="mt-4 flex items-center gap-1 text-sm font-medium text-primary hover:underline"
+                >
+                  Xem khóa học này <ArrowRight className="h-3.5 w-3.5" />
+                </Link>
+              </div>
+            ))}
+          </div>
+          <Link href="/blog" className="mt-8 inline-flex items-center gap-1 font-medium text-primary hover:underline">
+            Xem tất cả các bài viết <ArrowRight className="h-4 w-4" />
+          </Link>
         </section>
       )}
 
