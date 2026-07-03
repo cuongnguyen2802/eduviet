@@ -1,5 +1,6 @@
 import { PlayCircle, FileText, HelpCircle, Lock } from "lucide-react";
 import { formatDuration, formatTotalDuration } from "@/lib/format";
+import { PreviewLessonRow } from "@/components/course/preview-lesson-row";
 
 type Lesson = {
   id: string;
@@ -7,6 +8,7 @@ type Lesson = {
   type: "VIDEO" | "DOCUMENT" | "QUIZ";
   durationSec: number | null;
   isPreview: boolean;
+  youtubeVideoId: string | null;
 };
 
 type Section = {
@@ -46,18 +48,29 @@ export function CourseCurriculum({ sections }: { sections: Section[] }) {
           <div className="divide-y border-t">
             {section.lessons.map((lesson) => {
               const Icon = typeIcon[lesson.type];
+              const durationLabel = lesson.durationSec ? formatDuration(lesson.durationSec) : null;
+
+              if (lesson.isPreview && lesson.youtubeVideoId) {
+                return (
+                  <PreviewLessonRow
+                    key={lesson.id}
+                    title={lesson.title}
+                    type={lesson.type}
+                    youtubeVideoId={lesson.youtubeVideoId}
+                    durationLabel={durationLabel}
+                  />
+                );
+              }
+
               return (
                 <div key={lesson.id} className="flex items-center justify-between px-4 py-3 text-sm">
                   <div className="flex items-center gap-3">
                     <Icon className="h-4 w-4 text-muted-foreground shrink-0" />
                     <span>{lesson.title}</span>
-                    {lesson.isPreview && (
-                      <span className="text-xs text-primary font-medium">Xem trước</span>
-                    )}
                   </div>
                   <div className="flex items-center gap-2 text-muted-foreground">
-                    {lesson.durationSec ? <span>{formatDuration(lesson.durationSec)}</span> : null}
-                    {!lesson.isPreview && <Lock className="h-3.5 w-3.5" />}
+                    {durationLabel && <span>{durationLabel}</span>}
+                    <Lock className="h-3.5 w-3.5" />
                   </div>
                 </div>
               );
