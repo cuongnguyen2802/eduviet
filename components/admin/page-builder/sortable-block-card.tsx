@@ -3,9 +3,9 @@
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { GripVertical, Pencil, Copy, Trash2 } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { BLOCK_LABELS, blockSummary, type PageBlock, type BlockSlot } from "@/lib/blocks";
+import { BLOCK_LABELS, type PageBlock, type BlockSlot } from "@/lib/blocks";
+import { BlockPreview } from "@/components/admin/page-builder/block-preview";
 import { cn } from "@/lib/utils";
 
 export function SortableBlockCard({
@@ -34,47 +34,85 @@ export function SortableBlockCard({
     <div
       ref={setNodeRef}
       style={style}
-      className={cn(
-        "flex items-center gap-3 rounded-lg border bg-background p-3",
-        isDragging && "opacity-50 shadow-lg"
-      )}
+      className={cn("group/block relative", isDragging && "z-20 opacity-60 shadow-2xl")}
     >
-      <button
-        type="button"
-        className="cursor-grab touch-none text-muted-foreground hover:text-foreground active:cursor-grabbing"
-        {...attributes}
-        {...listeners}
-      >
-        <GripVertical className="h-5 w-5" />
-      </button>
-
-      <div className="min-w-0 flex-1">
-        <p className="text-sm font-medium">{BLOCK_LABELS[block.type]}</p>
-        <p className="text-xs text-muted-foreground truncate">{blockSummary(block)}</p>
+      {/* Xem trước trực quan bằng chính component render công khai — vô hiệu tương tác để không điều hướng khi click. */}
+      <div className="pointer-events-none select-none">
+        <BlockPreview block={block} />
       </div>
 
-      {isHomepage && (
-        <Select value={block.slot ?? "bottom"} onValueChange={(v) => onSlotChange(v as BlockSlot)}>
-          <SelectTrigger className="w-36 shrink-0">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="top">Đầu trang chủ</SelectItem>
-            <SelectItem value="bottom">Cuối trang chủ</SelectItem>
-          </SelectContent>
-        </Select>
-      )}
+      {/* Click bất kỳ đâu trên khối để sửa, giống UX Builder Flatsome. */}
+      <button
+        type="button"
+        onClick={onEdit}
+        aria-label={`Sửa ${BLOCK_LABELS[block.type]}`}
+        className="absolute inset-0 cursor-pointer bg-primary/0 opacity-0 ring-inset ring-primary/60 transition-all group-hover/block:bg-primary/5 group-hover/block:opacity-100 group-hover/block:ring-2"
+      />
 
-      <div className="flex items-center gap-1 shrink-0">
-        <Button type="button" variant="ghost" size="icon" onClick={onEdit} title="Sửa">
-          <Pencil className="h-4 w-4" />
-        </Button>
-        <Button type="button" variant="ghost" size="icon" onClick={onDuplicate} title="Nhân bản">
-          <Copy className="h-4 w-4" />
-        </Button>
-        <Button type="button" variant="ghost" size="icon" onClick={onDelete} title="Xóa">
-          <Trash2 className="h-4 w-4 text-destructive" />
-        </Button>
+      {/* Nhãn loại khối */}
+      <div className="pointer-events-none absolute left-2 top-2 z-10 rounded bg-background/95 px-2 py-1 text-xs font-medium opacity-0 shadow-sm transition-opacity group-hover/block:opacity-100">
+        {BLOCK_LABELS[block.type]}
+      </div>
+
+      {/* Tay cầm kéo thả */}
+      <button
+        type="button"
+        {...attributes}
+        {...listeners}
+        aria-label="Kéo để sắp xếp"
+        className="absolute right-2 top-2 z-10 flex h-7 w-7 cursor-grab items-center justify-center rounded border bg-background text-muted-foreground opacity-0 shadow-sm transition-opacity hover:text-foreground active:cursor-grabbing group-hover/block:opacity-100"
+      >
+        <GripVertical className="h-4 w-4" />
+      </button>
+
+      {/* Thanh công cụ: sửa / nhân bản / xóa (+ chọn vị trí trên trang chủ) */}
+      <div className="absolute right-2 top-11 z-10 flex flex-col items-end gap-1 opacity-0 transition-opacity group-hover/block:opacity-100">
+        {isHomepage && (
+          <Select value={block.slot ?? "bottom"} onValueChange={(v) => onSlotChange(v as BlockSlot)}>
+            <SelectTrigger className="h-7 w-36 border bg-background text-xs shadow-sm">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent onClick={(e) => e.stopPropagation()}>
+              <SelectItem value="top">Đầu trang chủ</SelectItem>
+              <SelectItem value="bottom">Cuối trang chủ</SelectItem>
+            </SelectContent>
+          </Select>
+        )}
+        <div className="flex items-center gap-1 rounded border bg-background p-0.5 shadow-sm">
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              onEdit();
+            }}
+            title="Sửa"
+            className="flex h-6 w-6 items-center justify-center rounded hover:bg-accent"
+          >
+            <Pencil className="h-3.5 w-3.5" />
+          </button>
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              onDuplicate();
+            }}
+            title="Nhân bản"
+            className="flex h-6 w-6 items-center justify-center rounded hover:bg-accent"
+          >
+            <Copy className="h-3.5 w-3.5" />
+          </button>
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              onDelete();
+            }}
+            title="Xóa"
+            className="flex h-6 w-6 items-center justify-center rounded hover:bg-accent"
+          >
+            <Trash2 className="h-3.5 w-3.5 text-destructive" />
+          </button>
+        </div>
       </div>
     </div>
   );

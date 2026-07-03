@@ -20,6 +20,7 @@ import { updatePageMeta, updatePageBlocks } from "@/app/actions/pages";
 import { createDefaultBlock, type BlockSlot, type BlockType, type PageBlock } from "@/lib/blocks";
 import { SortableBlockCard } from "@/components/admin/page-builder/sortable-block-card";
 import { AddBlockMenu } from "@/components/admin/page-builder/add-block-menu";
+import { InsertBlockBar } from "@/components/admin/page-builder/insert-block-bar";
 import { BlockEditDialog } from "@/components/admin/page-builder/block-edit-dialog";
 
 type PageData = {
@@ -57,9 +58,13 @@ export function PageBuilder({ page }: { page: PageData }) {
     });
   }
 
-  function addBlock(type: BlockType) {
+  function addBlockAt(index: number, type: BlockType) {
     const block = createDefaultBlock(type);
-    setBlocks((prev) => [...prev, block]);
+    setBlocks((prev) => {
+      const next = [...prev];
+      next.splice(index, 0, block);
+      return next;
+    });
     setEditingId(block.id);
   }
 
@@ -94,8 +99,8 @@ export function PageBuilder({ page }: { page: PageData }) {
   }
 
   return (
-    <div className="space-y-6 max-w-3xl">
-      <div className="rounded-lg border p-4 space-y-4">
+    <div className="space-y-6">
+      <div className="max-w-3xl rounded-lg border p-4 space-y-4">
         <div className="grid sm:grid-cols-2 gap-4">
           <div className="space-y-2">
             <Label>Tiêu đề trang</Label>
@@ -131,39 +136,50 @@ export function PageBuilder({ page }: { page: PageData }) {
       </div>
 
       <div className="flex items-center justify-between">
-        <h2 className="font-semibold">Các khối nội dung</h2>
-        <AddBlockMenu onAdd={addBlock} />
+        <div>
+          <h2 className="font-semibold">Xem trước trực quan</h2>
+          <p className="text-xs text-muted-foreground mt-0.5">
+            Di chuột vào khối để sửa/nhân bản/xóa/kéo sắp xếp. Rê chuột vào khoảng trống giữa các khối để chèn khối mới.
+          </p>
+        </div>
+        <AddBlockMenu onAdd={(type) => addBlockAt(blocks.length, type)} />
       </div>
 
       {isHomepage && (
         <p className="text-xs text-muted-foreground -mt-4">
-          Trang chủ giữ nguyên các phần động (hero slider, danh mục, khóa học nổi bật...). Chọn vị trí &quot;Đầu
-          trang chủ&quot; hoặc &quot;Cuối trang chủ&quot; cho mỗi khối bạn thêm ở đây.
+          Trang chủ giữ nguyên các phần động (hero slider, danh mục, khóa học nổi bật...) — không hiện ở đây. Chọn vị
+          trí &quot;Đầu trang chủ&quot; hoặc &quot;Cuối trang chủ&quot; cho mỗi khối bạn thêm.
         </p>
       )}
 
-      <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
-        <SortableContext items={blocks.map((b) => b.id)} strategy={verticalListSortingStrategy}>
-          <div className="space-y-2">
-            {blocks.map((block) => (
-              <SortableBlockCard
-                key={block.id}
-                block={block}
-                isHomepage={isHomepage}
-                onEdit={() => setEditingId(block.id)}
-                onDuplicate={() => duplicateBlock(block.id)}
-                onDelete={() => deleteBlock(block.id)}
-                onSlotChange={(slot) => updateBlockSlot(block.id, slot)}
-              />
-            ))}
-            {blocks.length === 0 && (
-              <p className="text-sm text-muted-foreground text-center py-8 border rounded-lg border-dashed">
-                Chưa có khối nội dung nào. Bấm &quot;Thêm khối&quot; để bắt đầu.
-              </p>
-            )}
-          </div>
-        </SortableContext>
-      </DndContext>
+      <div className="rounded-xl border bg-muted/30 p-3">
+        <div className="rounded-lg border bg-background shadow-sm overflow-hidden">
+          <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+            <SortableContext items={blocks.map((b) => b.id)} strategy={verticalListSortingStrategy}>
+              <InsertBlockBar onAdd={(type) => addBlockAt(0, type)} />
+              {blocks.map((block, index) => (
+                <div key={block.id}>
+                  <SortableBlockCard
+                    block={block}
+                    isHomepage={isHomepage}
+                    onEdit={() => setEditingId(block.id)}
+                    onDuplicate={() => duplicateBlock(block.id)}
+                    onDelete={() => deleteBlock(block.id)}
+                    onSlotChange={(slot) => updateBlockSlot(block.id, slot)}
+                  />
+                  <InsertBlockBar onAdd={(type) => addBlockAt(index + 1, type)} />
+                </div>
+              ))}
+            </SortableContext>
+          </DndContext>
+
+          {blocks.length === 0 && (
+            <p className="text-sm text-muted-foreground text-center py-12">
+              Chưa có khối nội dung nào. Bấm &quot;Thêm khối&quot; hoặc di chuột vào vạch phía trên để bắt đầu.
+            </p>
+          )}
+        </div>
+      </div>
 
       <BlockEditDialog
         block={editingBlock}
