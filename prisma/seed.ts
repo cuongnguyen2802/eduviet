@@ -109,6 +109,67 @@ async function main() {
     },
   });
 
+  // ── 5 giảng viên bổ sung, mỗi người một chuyên môn riêng ──────
+  const instructor2 = await prisma.user.upsert({
+    where: { email: "giangvien2@example.com" },
+    update: {},
+    create: {
+      authId: "seed-instructor2-auth-id",
+      email: "giangvien2@example.com",
+      name: "Phạm Thị Hương",
+      role: Role.INSTRUCTOR,
+      bio: "UI/UX Designer với 8 năm kinh nghiệm thiết kế sản phẩm số cho các công ty công nghệ tại Việt Nam.",
+    },
+  });
+
+  const instructor3 = await prisma.user.upsert({
+    where: { email: "giangvien3@example.com" },
+    update: {},
+    create: {
+      authId: "seed-instructor3-auth-id",
+      email: "giangvien3@example.com",
+      name: "Trần Minh Khoa",
+      role: Role.INSTRUCTOR,
+      bio: "Full-stack Developer, từng làm việc tại nhiều startup công nghệ, chuyên sâu về React và Node.js.",
+    },
+  });
+
+  const instructor4 = await prisma.user.upsert({
+    where: { email: "giangvien4@example.com" },
+    update: {},
+    create: {
+      authId: "seed-instructor4-auth-id",
+      email: "giangvien4@example.com",
+      name: "Đỗ Thanh Tùng",
+      role: Role.INSTRUCTOR,
+      bio: "Giảng viên tiếng Anh và tin học văn phòng với hơn 12 năm kinh nghiệm đào tạo doanh nghiệp.",
+    },
+  });
+
+  const instructor5 = await prisma.user.upsert({
+    where: { email: "giangvien5@example.com" },
+    update: {},
+    create: {
+      authId: "seed-instructor5-auth-id",
+      email: "giangvien5@example.com",
+      name: "Ngô Thị Lan",
+      role: Role.INSTRUCTOR,
+      bio: "Chuyên gia tư vấn khởi nghiệp và quản trị nhân sự, đồng sáng lập 2 doanh nghiệp vừa và nhỏ.",
+    },
+  });
+
+  const instructor6 = await prisma.user.upsert({
+    where: { email: "giangvien6@example.com" },
+    update: {},
+    create: {
+      authId: "seed-instructor6-auth-id",
+      email: "giangvien6@example.com",
+      name: "Vũ Đức Anh",
+      role: Role.INSTRUCTOR,
+      bio: "Thạc sĩ Ngôn ngữ Nhật Bản, có 10 năm kinh nghiệm giảng dạy và luyện thi JLPT tại Việt Nam.",
+    },
+  });
+
   // Tài khoản thật bạn đã đăng ký qua Supabase Auth — gắn thêm dữ liệu để test trực tiếp trên UI.
   const me = await prisma.user.findUnique({ where: { email: "ntcuong2802@gmail.com" } });
 
@@ -379,6 +440,264 @@ async function main() {
     );
   }
 
+  // ── 9. UI/UX Design cơ bản — PUBLISHED ──────────────────────
+  const courseI = await upsertCourse({
+    slug: "ui-ux-design-nen-tang-cho-nguoi-moi-bat-dau",
+    title: "UI/UX Design Nền Tảng Cho Người Mới Bắt Đầu",
+    description:
+      "Nắm vững quy trình thiết kế trải nghiệm người dùng từ nghiên cứu, wireframe đến prototype hoàn chỉnh.",
+    learnOutcomes: ["Tư duy UX Research cơ bản", "Xây dựng wireframe & prototype", "Nguyên tắc thiết kế UI hiện đại"],
+    price: 699000,
+    discountPrice: 399000,
+    coverImageUrl: "https://images.unsplash.com/photo-1559028006-448665bd7c7f",
+    level: CourseLevel.BEGINNER,
+    status: CourseStatus.PUBLISHED,
+    instructorId: instructor2.id,
+    categoryId: catBy("ui-ux").id,
+    sections: [
+      {
+        title: "Chương 1: Tư duy thiết kế trải nghiệm",
+        lessons: [
+          { title: "UX vs UI khác nhau như thế nào", youtubeVideoId: YT, durationSec: 340, isPreview: true },
+          { title: "Quy trình nghiên cứu người dùng cơ bản", youtubeVideoId: YT, durationSec: 500 },
+        ],
+      },
+      {
+        title: "Chương 2: Thực hành thiết kế",
+        lessons: [{ title: "Xây dựng wireframe cho ứng dụng di động", youtubeVideoId: YT, durationSec: 560 }],
+      },
+    ],
+  });
+
+  // ── 10. Figma — PUBLISHED ────────────────────────────────────
+  const courseJ = await upsertCourse({
+    slug: "figma-cho-nguoi-moi-bat-dau",
+    title: "Figma Cho Người Mới Bắt Đầu",
+    description: "Thành thạo công cụ thiết kế Figma từ giao diện, component, auto layout đến bàn giao cho developer.",
+    learnOutcomes: ["Thao tác thành thạo Figma", "Xây dựng component & design system", "Bàn giao design cho lập trình viên"],
+    price: 499000,
+    discountPrice: 249000,
+    coverImageUrl: "https://images.unsplash.com/photo-1561070791-2526d30994b5",
+    level: CourseLevel.BEGINNER,
+    status: CourseStatus.PUBLISHED,
+    instructorId: instructor2.id,
+    categoryId: catBy("thiet-ke-do-hoa").id,
+    sections: [
+      {
+        title: "Chương 1: Làm quen với Figma",
+        lessons: [{ title: "Tổng quan giao diện & công cụ chính", youtubeVideoId: YT, durationSec: 310, isPreview: true }],
+      },
+      {
+        title: "Chương 2: Component & Design System",
+        lessons: [{ title: "Xây dựng thư viện component tái sử dụng", youtubeVideoId: YT, durationSec: 480 }],
+      },
+    ],
+  });
+
+  // ── 11. React — PUBLISHED ────────────────────────────────────
+  const courseK = await upsertCourse({
+    slug: "lap-trinh-react-tu-zero-den-hero",
+    title: "Lập Trình React Từ Zero Đến Hero",
+    description: "Xây dựng ứng dụng React hiện đại với Hooks, quản lý state và tối ưu hiệu năng cho dự án thực tế.",
+    learnOutcomes: ["Thành thạo React Hooks", "Quản lý state với Context/Zustand", "Tối ưu hiệu năng ứng dụng React"],
+    price: 899000,
+    discountPrice: 549000,
+    coverImageUrl: "https://images.unsplash.com/photo-1633356122544-f134324a6cee",
+    level: CourseLevel.INTERMEDIATE,
+    status: CourseStatus.PUBLISHED,
+    instructorId: instructor3.id,
+    categoryId: catBy("lap-trinh-web").id,
+    sections: [
+      {
+        title: "Chương 1: Nền tảng React",
+        lessons: [
+          { title: "Component, Props và State", youtubeVideoId: YT, durationSec: 400, isPreview: true },
+          { title: "useEffect và vòng đời component", youtubeVideoId: YT, durationSec: 520 },
+        ],
+      },
+      {
+        title: "Chương 2: Xây dựng dự án thực tế",
+        lessons: [{ title: "Xây dựng ứng dụng Todo List hoàn chỉnh", youtubeVideoId: YT, durationSec: 610 }],
+      },
+    ],
+  });
+
+  // ── 12. Node.js — PUBLISHED ───────────────────────────────────
+  const courseL = await upsertCourse({
+    slug: "nodejs-backend-development",
+    title: "Node.js Backend Development",
+    description: "Xây dựng API backend với Node.js, Express và cơ sở dữ liệu quan hệ cho ứng dụng web thực tế.",
+    learnOutcomes: ["Xây dựng REST API với Express", "Kết nối và truy vấn cơ sở dữ liệu", "Xác thực người dùng với JWT"],
+    price: 899000,
+    coverImageUrl: "https://images.unsplash.com/photo-1627398242454-45a1465c2479",
+    level: CourseLevel.INTERMEDIATE,
+    status: CourseStatus.PUBLISHED,
+    instructorId: instructor3.id,
+    categoryId: catBy("lap-trinh-web").id,
+    sections: [
+      {
+        title: "Chương 1: Xây dựng API cơ bản",
+        lessons: [{ title: "Tạo REST API đầu tiên với Express", youtubeVideoId: YT, durationSec: 450, isPreview: true }],
+      },
+      {
+        title: "Chương 2: Xác thực & bảo mật",
+        lessons: [{ title: "Đăng nhập, đăng ký với JWT", youtubeVideoId: YT, durationSec: 540 }],
+      },
+    ],
+  });
+
+  // ── 13. TOEIC — PUBLISHED ──────────────────────────────────────
+  const courseM = await upsertCourse({
+    slug: "toeic-700-trong-60-ngay",
+    title: "TOEIC 700+ Trong 60 Ngày",
+    description: "Lộ trình luyện thi TOEIC cấp tốc, tập trung vào chiến lược làm bài và từ vựng trọng tâm theo từng phần thi.",
+    learnOutcomes: ["Chiến lược làm bài Listening & Reading", "1000 từ vựng TOEIC thông dụng", "Luyện đề thi thử sát cấu trúc thật"],
+    price: 599000,
+    discountPrice: 349000,
+    coverImageUrl: "https://images.unsplash.com/photo-1503676260728-1c00da094a0b",
+    level: CourseLevel.INTERMEDIATE,
+    status: CourseStatus.PUBLISHED,
+    instructorId: instructor4.id,
+    categoryId: catBy("tieng-anh").id,
+    sections: [
+      {
+        title: "Chương 1: Chiến lược tổng quan",
+        lessons: [{ title: "Cấu trúc đề thi TOEIC và cách phân bổ thời gian", youtubeVideoId: YT, durationSec: 380, isPreview: true }],
+      },
+      {
+        title: "Chương 2: Luyện đề",
+        lessons: [{ title: "Luyện đề Reading Part 5-6", youtubeVideoId: YT, durationSec: 500 }],
+      },
+    ],
+  });
+
+  // ── 14. Tiếng Nhật N5 — PUBLISHED ───────────────────────────────
+  const courseN = await upsertCourse({
+    slug: "tieng-nhat-n5-cho-nguoi-moi-bat-dau",
+    title: "Tiếng Nhật N5 Cho Người Mới Bắt Đầu",
+    description: "Học tiếng Nhật từ bảng chữ cái Hiragana, Katakana đến ngữ pháp và từ vựng nền tảng trình độ N5.",
+    learnOutcomes: ["Đọc thông thạo Hiragana, Katakana", "Ngữ pháp và từ vựng N5", "Giao tiếp cơ bản hàng ngày"],
+    price: 549000,
+    discountPrice: 299000,
+    coverImageUrl: "https://images.unsplash.com/photo-1528360983277-13d401cdc186",
+    level: CourseLevel.BEGINNER,
+    status: CourseStatus.PUBLISHED,
+    instructorId: instructor6.id,
+    categoryId: catBy("tieng-nhat").id,
+    sections: [
+      {
+        title: "Chương 1: Bảng chữ cái",
+        lessons: [
+          { title: "Bảng chữ Hiragana", youtubeVideoId: YT, durationSec: 400, isPreview: true },
+          { title: "Bảng chữ Katakana", youtubeVideoId: YT, durationSec: 380 },
+        ],
+      },
+      {
+        title: "Chương 2: Ngữ pháp nền tảng",
+        lessons: [{ title: "Mẫu câu giới thiệu bản thân", youtubeVideoId: YT, durationSec: 420 }],
+      },
+    ],
+  });
+
+  // ── 15. Khởi nghiệp quán cà phê — PUBLISHED ───────────────────
+  const courseO = await upsertCourse({
+    slug: "khoi-nghiep-quan-ca-phe-tu-a-den-z",
+    title: "Khởi Nghiệp Quán Cà Phê Từ A Đến Z",
+    description: "Hướng dẫn toàn diện từ lên ý tưởng, dự toán chi phí, vận hành đến marketing cho quán cà phê nhỏ.",
+    learnOutcomes: ["Lập kế hoạch kinh doanh quán cà phê", "Dự toán chi phí đầu tư & vận hành", "Chiến lược marketing địa phương"],
+    price: 799000,
+    discountPrice: 449000,
+    coverImageUrl: "https://images.unsplash.com/photo-1521017432531-fbd92d768814",
+    level: CourseLevel.BEGINNER,
+    status: CourseStatus.PUBLISHED,
+    instructorId: instructor5.id,
+    categoryId: catBy("khoi-nghiep").id,
+    sections: [
+      {
+        title: "Chương 1: Lên kế hoạch",
+        lessons: [{ title: "Nghiên cứu thị trường và chọn mặt bằng", youtubeVideoId: YT, durationSec: 460, isPreview: true }],
+      },
+      {
+        title: "Chương 2: Vận hành & marketing",
+        lessons: [{ title: "Quản lý vận hành và giữ chân khách hàng", youtubeVideoId: YT, durationSec: 500 }],
+      },
+    ],
+  });
+
+  // ── 16. Quản trị nhân sự — PUBLISHED ───────────────────────────
+  const courseP = await upsertCourse({
+    slug: "quan-tri-nhan-su-hien-dai",
+    title: "Quản Trị Nhân Sự Hiện Đại",
+    description: "Xây dựng quy trình tuyển dụng, đào tạo và giữ chân nhân tài phù hợp với doanh nghiệp vừa và nhỏ.",
+    learnOutcomes: ["Quy trình tuyển dụng hiệu quả", "Xây dựng lộ trình đào tạo nhân viên", "Chính sách giữ chân nhân tài"],
+    price: 749000,
+    coverImageUrl: "https://images.unsplash.com/photo-1552664730-d307ca884978",
+    level: CourseLevel.INTERMEDIATE,
+    status: CourseStatus.PUBLISHED,
+    instructorId: instructor5.id,
+    categoryId: catBy("quan-tri-kinh-doanh").id,
+    sections: [
+      {
+        title: "Chương 1: Tuyển dụng",
+        lessons: [{ title: "Xây dựng quy trình phỏng vấn hiệu quả", youtubeVideoId: YT, durationSec: 420, isPreview: true }],
+      },
+      {
+        title: "Chương 2: Đào tạo & giữ chân",
+        lessons: [{ title: "Xây dựng lộ trình phát triển nhân viên", youtubeVideoId: YT, durationSec: 480 }],
+      },
+    ],
+  });
+
+  // ── 17. Content Marketing đa kênh — PUBLISHED ──────────────────
+  const courseQ = await upsertCourse({
+    slug: "content-marketing-da-kenh",
+    title: "Content Marketing Đa Kênh",
+    description: "Xây dựng chiến lược nội dung nhất quán trên Facebook, TikTok, Website giúp tăng nhận diện thương hiệu.",
+    learnOutcomes: ["Lập kế hoạch content theo tháng", "Viết content thu hút cho từng nền tảng", "Đo lường hiệu quả content"],
+    price: 649000,
+    discountPrice: 349000,
+    coverImageUrl: "https://images.unsplash.com/photo-1432888622747-4eb9a8efeb07",
+    level: CourseLevel.INTERMEDIATE,
+    status: CourseStatus.PUBLISHED,
+    instructorId: instructor.id,
+    categoryId: catBy("marketing-so").id,
+    sections: [
+      {
+        title: "Chương 1: Chiến lược nội dung",
+        lessons: [{ title: "Xây dựng content pillar cho thương hiệu", youtubeVideoId: YT, durationSec: 400, isPreview: true }],
+      },
+      {
+        title: "Chương 2: Sản xuất & đo lường",
+        lessons: [{ title: "Viết content theo từng nền tảng", youtubeVideoId: YT, durationSec: 460 }],
+      },
+    ],
+  });
+
+  // ── 18. PowerPoint — PUBLISHED ─────────────────────────────────
+  const courseR = await upsertCourse({
+    slug: "powerpoint-chuyen-nghiep-cho-dan-van-phong",
+    title: "PowerPoint Chuyên Nghiệp Cho Dân Văn Phòng",
+    description: "Thiết kế slide thuyết trình chuyên nghiệp, thu hút và thuyết phục người xem trong công việc hàng ngày.",
+    learnOutcomes: ["Nguyên tắc thiết kế slide chuyên nghiệp", "Sử dụng animation hợp lý", "Kỹ năng thuyết trình tự tin"],
+    price: 349000,
+    discountPrice: 179000,
+    coverImageUrl: "https://images.unsplash.com/photo-1551288049-bebda4e38f71",
+    level: CourseLevel.BEGINNER,
+    status: CourseStatus.PUBLISHED,
+    instructorId: instructor4.id,
+    categoryId: catBy("tin-hoc-van-phong").id,
+    sections: [
+      {
+        title: "Chương 1: Nguyên tắc thiết kế slide",
+        lessons: [{ title: "Bố cục và màu sắc trong thuyết trình", youtubeVideoId: YT, durationSec: 340, isPreview: true }],
+      },
+      {
+        title: "Chương 2: Hiệu ứng & thuyết trình",
+        lessons: [{ title: "Sử dụng animation và transition hợp lý", youtubeVideoId: YT, durationSec: 380 }],
+      },
+    ],
+  });
+
   // ── Coupon ────────────────────────────────────────────────
   await prisma.coupon.upsert({
     where: { code: "WELCOME50" },
@@ -600,6 +919,33 @@ async function main() {
         "Học theo kỹ năng ngắn hạn (microlearning) tiếp tục lên ngôi khi người học ưu tiên các khóa học tập trung vào một kỹ năng cụ thể, có thể hoàn thành trong vài giờ đến vài ngày.\n\nHọc viên ngày càng quan tâm tới chứng chỉ có thể chia sẻ trên hồ sơ nghề nghiệp, xem đây như một minh chứng cụ thể cho quá trình học tập của mình.\n\nCác nền tảng cũng đang đầu tư nhiều hơn vào tương tác giữa học viên và giảng viên thông qua hỏi đáp trực tiếp trong bài học, thay vì chỉ dừng lại ở video một chiều.",
       status: "DRAFT" as const,
     },
+    {
+      slug: "chung-chi-online-co-gia-tri-that-su-khong",
+      title: "Chứng chỉ khóa học online có giá trị thật sự không?",
+      excerpt:
+        "Nhiều người băn khoăn liệu chứng chỉ hoàn thành khóa học online có được nhà tuyển dụng công nhận hay không. Bài viết phân tích giá trị thực sự của chúng.",
+      content:
+        "Chứng chỉ hoàn thành khóa học online không thay thế bằng cấp chính quy, nhưng lại có giá trị riêng trong việc chứng minh bạn chủ động học hỏi và cập nhật kỹ năng mới.\n\nVới nhà tuyển dụng trong lĩnh vực công nghệ, marketing hay thiết kế, kỹ năng thực tế và sản phẩm demo (portfolio) thường được đánh giá cao hơn tờ chứng chỉ. Vì vậy, hãy xem chứng chỉ như một điểm cộng đi kèm sản phẩm thực tế bạn làm được trong quá trình học.\n\nMột chứng chỉ từ khóa học có nội dung sát thực tế, giảng viên uy tín và có bài tập thực hành rõ ràng sẽ có giá trị hơn nhiều so với một chứng chỉ chỉ cần xem hết video là nhận được.\n\nLời khuyên là hãy tập trung vào việc học được gì, làm ra được sản phẩm gì sau khóa học, thay vì chỉ chăm chăm vào tấm chứng chỉ cuối cùng.",
+      status: "PUBLISHED" as const,
+    },
+    {
+      slug: "10-ky-nang-cong-nghe-nen-hoc-nam-2026",
+      title: "10 kỹ năng công nghệ nên học trong năm 2026",
+      excerpt:
+        "Thị trường công nghệ liên tục thay đổi. Đây là những kỹ năng đang được các nhà tuyển dụng săn đón nhiều nhất trong năm nay.",
+      content:
+        "Lập trình web full-stack với React và Node.js tiếp tục là kỹ năng nền tảng được nhiều doanh nghiệp tuyển dụng, đặc biệt khi nhu cầu xây dựng sản phẩm số ngày càng tăng.\n\nThiết kế UI/UX cũng là kỹ năng quan trọng không kém, khi trải nghiệm người dùng trở thành yếu tố cạnh tranh chính giữa các sản phẩm có tính năng tương tự nhau.\n\nBên cạnh đó, kỹ năng phân tích dữ liệu cơ bản và sử dụng công cụ tự động hóa văn phòng (Excel nâng cao, Power BI) giúp nhân sự ở nhiều vị trí khác nhau làm việc hiệu quả hơn.\n\nCuối cùng, khả năng sử dụng thành thạo các công cụ AI hỗ trợ công việc hàng ngày đang trở thành một yêu cầu gần như bắt buộc ở nhiều vị trí, từ marketing đến lập trình.",
+      status: "PUBLISHED" as const,
+    },
+    {
+      slug: "lo-trinh-tu-hoc-lap-trinh-cho-nguoi-moi",
+      title: "Cách xây dựng lộ trình tự học lập trình cho người mới",
+      excerpt:
+        "Tự học lập trình không khó nếu bạn có một lộ trình rõ ràng. Bài viết gợi ý các bước cơ bản giúp người mới không bị choáng ngợp.",
+      content:
+        "Bước đầu tiên là chọn một ngôn ngữ lập trình và kiên trì với nó ít nhất 2-3 tháng, thay vì nhảy liên tục giữa nhiều công nghệ khác nhau khiến kiến thức bị rời rạc.\n\nSau khi nắm vững cú pháp cơ bản, hãy chuyển sang làm các dự án nhỏ thực tế thay vì chỉ học lý thuyết suông. Một dự án nhỏ hoàn chỉnh có giá trị hơn nhiều so với việc xem hết hàng chục giờ video mà không thực hành.\n\nTham gia cộng đồng lập trình viên, đọc code của người khác và nhờ review code của mình cũng là cách học nhanh và hiệu quả, giúp bạn phát hiện những lỗ hổng kiến thức mà tự học một mình khó nhận ra.\n\nCuối cùng, đừng ngại bắt đầu lại từ đầu nếu thấy lộ trình hiện tại chưa phù hợp — quan trọng là duy trì được động lực học tập lâu dài.",
+      status: "PUBLISHED" as const,
+    },
   ];
 
   const blogAuthorId = (me ?? instructor).id;
@@ -618,10 +964,29 @@ async function main() {
 
   console.log({
     categories: categories.length,
-    instructor: instructor.email,
+    instructors: [instructor, instructor2, instructor3, instructor4, instructor5, instructor6].map((i) => i.email),
     students: [student1.email, student2.email],
     realAccountLinked: !!me,
-    courses: [courseA, courseB, courseC, courseD, courseE, courseF, courseG, courseH]
+    courses: [
+      courseA,
+      courseB,
+      courseC,
+      courseD,
+      courseE,
+      courseF,
+      courseG,
+      courseH,
+      courseI,
+      courseJ,
+      courseK,
+      courseL,
+      courseM,
+      courseN,
+      courseO,
+      courseP,
+      courseQ,
+      courseR,
+    ]
       .filter(Boolean)
       .map((c) => `${c!.slug} [${c!.status}]`),
   });
