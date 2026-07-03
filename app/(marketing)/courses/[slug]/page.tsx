@@ -221,75 +221,77 @@ export default async function CourseDetailPage({ params }: { params: { slug: str
           </section>
         </div>
 
-        <div className="lg:col-start-3 space-y-4">
-          <div className="rounded-lg border bg-background overflow-hidden shadow-lg sticky top-20 lg:-mt-64">
-            {previewLesson?.youtubeVideoId ? (
-              <VideoPlayer youtubeVideoId={previewLesson.youtubeVideoId} />
-            ) : (
-              <div className="relative aspect-video bg-muted">
-                {course.coverImageUrl && (
-                  <Image src={course.coverImageUrl} alt={course.title} fill className="object-cover" />
-                )}
-              </div>
-            )}
-            <div className="p-5">
-              <div className="flex items-center gap-2 mb-1">
-                <span className="text-2xl font-bold">{formatVND(discountPrice ?? price)}</span>
-                {discountPrice && (
-                  <>
-                    <span className="text-muted-foreground line-through text-sm">{formatVND(price)}</span>
-                    <Badge className="bg-destructive text-destructive-foreground">-{discountPct}%</Badge>
-                  </>
-                )}
-              </div>
-
-              {enrollment ? (
-                <Button size="lg" className="w-full mt-4" asChild>
-                  <Link href={`/learn/${course.id}`}>Vào học ngay</Link>
-                </Button>
+        <div className="lg:col-start-3">
+          <div className="space-y-4 sticky top-20">
+            <div className="rounded-lg border bg-background overflow-hidden shadow-lg lg:-mt-64">
+              {previewLesson?.youtubeVideoId ? (
+                <VideoPlayer youtubeVideoId={previewLesson.youtubeVideoId} />
               ) : (
-                <div className="space-y-2 mt-4">
-                  <BuyNowButton course={cartItem} />
-                  <AddToCartButton course={cartItem} />
-                  {user && <WishlistButton courseId={course.id} initialWishlisted={isWishlisted} />}
+                <div className="relative aspect-video bg-muted">
+                  {course.coverImageUrl && (
+                    <Image src={course.coverImageUrl} alt={course.title} fill className="object-cover" />
+                  )}
                 </div>
               )}
-
-              <div className="mt-5 space-y-2 text-sm text-muted-foreground">
-                <div className="flex items-center gap-2">
-                  <InfinityIcon className="h-4 w-4 text-primary shrink-0" /> Mua 1 lần — học trọn đời
+              <div className="p-5">
+                <div className="flex items-center gap-2 mb-1">
+                  <span className="text-2xl font-bold">{formatVND(discountPrice ?? price)}</span>
+                  {discountPrice && (
+                    <>
+                      <span className="text-muted-foreground line-through text-sm">{formatVND(price)}</span>
+                      <Badge className="bg-destructive text-destructive-foreground">-{discountPct}%</Badge>
+                    </>
+                  )}
                 </div>
-                <div className="flex items-center gap-2">
-                  <Award className="h-4 w-4 text-primary shrink-0" /> Nhận chứng chỉ khi hoàn thành
-                </div>
-                <div className="flex items-center gap-2">
-                  <ShieldCheck className="h-4 w-4 text-primary shrink-0" /> Được hỗ trợ hoàn tiền
-                </div>
-              </div>
 
-              <div className="mt-4 flex justify-center border-t pt-3">
-                <ShareButton title={course.title} />
-              </div>
-            </div>
-          </div>
-
-          <div className="rounded-lg border p-5">
-            <p className="font-semibold mb-3">Giảng viên</p>
-            <div className="flex items-center gap-3">
-              <Avatar>
-                <AvatarFallback>{course.instructor.name.slice(0, 2).toUpperCase()}</AvatarFallback>
-              </Avatar>
-              <div>
-                <p className="font-medium text-sm">{course.instructor.name}</p>
-                {course.instructor.bio && (
-                  <p className="text-xs text-muted-foreground line-clamp-3 mt-1">{course.instructor.bio}</p>
+                {enrollment ? (
+                  <Button size="lg" className="w-full mt-4" asChild>
+                    <Link href={`/learn/${course.id}`}>Vào học ngay</Link>
+                  </Button>
+                ) : (
+                  <div className="space-y-2 mt-4">
+                    <BuyNowButton course={cartItem} />
+                    <AddToCartButton course={cartItem} />
+                    {user && <WishlistButton courseId={course.id} initialWishlisted={isWishlisted} />}
+                  </div>
                 )}
+
+                <div className="mt-5 space-y-2 text-sm text-muted-foreground">
+                  <div className="flex items-center gap-2">
+                    <InfinityIcon className="h-4 w-4 text-primary shrink-0" /> Mua 1 lần — học trọn đời
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Award className="h-4 w-4 text-primary shrink-0" /> Nhận chứng chỉ khi hoàn thành
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <ShieldCheck className="h-4 w-4 text-primary shrink-0" /> Được hỗ trợ hoàn tiền
+                  </div>
+                </div>
+
+                <div className="mt-4 flex justify-center border-t pt-3">
+                  <ShareButton title={course.title} />
+                </div>
               </div>
             </div>
-          </div>
-          <div className="rounded-lg border p-5 flex items-center gap-3 text-sm text-muted-foreground">
-            <Clock className="h-4 w-4 shrink-0 text-primary" />
-            Cập nhật lần cuối {course.updatedAt.toLocaleDateString("vi-VN")}
+
+            <div className="rounded-lg border p-5">
+              <p className="font-semibold mb-3">Giảng viên</p>
+              <div className="flex items-center gap-3">
+                <Avatar>
+                  <AvatarFallback>{course.instructor.name.slice(0, 2).toUpperCase()}</AvatarFallback>
+                </Avatar>
+                <div>
+                  <p className="font-medium text-sm">{course.instructor.name}</p>
+                  {course.instructor.bio && (
+                    <p className="text-xs text-muted-foreground line-clamp-3 mt-1">{course.instructor.bio}</p>
+                  )}
+                </div>
+              </div>
+            </div>
+            <div className="rounded-lg border p-5 flex items-center gap-3 text-sm text-muted-foreground">
+              <Clock className="h-4 w-4 shrink-0 text-primary" />
+              Cập nhật lần cuối {course.updatedAt.toLocaleDateString("vi-VN")}
+            </div>
           </div>
         </div>
       </div>
