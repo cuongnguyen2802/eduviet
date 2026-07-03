@@ -1,0 +1,407 @@
+// Prisma schema — Nền tảng học trực tuyến (Unica.vn clone)
+// Xem CLAUDE.md mục 5 để biết phác thảo gốc.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+// ─────────────────────────────────────────────
+// User & Auth
+// ─────────────────────────────────────────────
+
+model User {
+  id              String   @id @default(cuid())
+  authId          String   @unique // Supabase auth.users.id
+  email           String   @unique
+  name            String
+  role            Role     @default(STUDENT)
+  avatarUrl       String?
+  bio             String?
+  isBanned        Boolean  @default(false)
+  revenueSharePct Int      @default(70) // % doanh thu giảng viên được nhận trên mỗi đơn hàng
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  coursesTeaching Course[]                @relation("InstructorCourses")
+  enrollments     Enrollment[]
+  reviews         Review[]
+  questions       Question[]
+  answers         Answer[]
+  wishlist        Wishlist[]
+  orders          Order[]
+  instructorApp   InstructorApplication?
+  lessonNotes     LessonNote[]
+  withdrawals     Withdrawal[]
+  blogPosts       BlogPost[]
+  mediaAssets     MediaAsset[]
+
+  @@index([role])
+}
+
+enum Role {
+  STUDENT
+  INSTRUCTOR
+  ADMIN
+}
+
+model InstructorApplication {
+  id          String            @id @default(cuid())
+  userId      String            @unique
+  user        User              @relation(fields: [userId], references: [id])
+  headline    String
+  expertise   String
+  status      ApplicationStatus @default(PENDING)
+  submittedAt DateTime          @default(now())
+  reviewedAt  DateTime?
+}
+
+enum ApplicationStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+// ─────────────────────────────────────────────
+// Course & Curriculum
+// ─────────────────────────────────────────────
+
+model Course {
+  id            String       @id @default(cuid())
+  title         String
+  slug          String       @unique
+  description   String
+  learnOutcomes String[]     @default([])
+  price         Decimal      @db.Decimal(12, 0)
+  discountPrice Decimal?     @db.Decimal(12, 0)
+  coverImageUrl String?
+  level         CourseLevel  @default(BEGINNER)
+  status        CourseStatus @default(DRAFT)
+  rejectReason  String?
+
+  instructorId String
+  instructor   User   @relation("InstructorCourses", fields: [instructorId], references: [id])
+
+  categoryId String
+  category   Category @relation(fields: [categoryId], references: [id])
+
+  sections    Section[]
+  enrollments Enrollment[]
+  reviews     Review[]
+  wishlist    Wishlist[]
+  orderItems  OrderItem[]
+  tags        Tag[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([status])
+  @@index([categoryId])
+  @@index([instructorId])
+}
+
+enum CourseLevel {
+  BEGINNER
+  INTERMEDIATE
+  ADVANCED
+}
+
+enum CourseStatus {
+  DRAFT
+  PENDING_REVIEW
+  PUBLISHED
+  REJECTED
+}
+
+model Category {
+  id          String     @id @default(cuid())
+  name        String
+  slug        String     @unique
+  icon        String? // tên icon lucide-react, dùng cho mega menu (vd: "Briefcase")
+  description String? // hiển thị trên trang danh sách khóa học lọc theo danh mục + fallback meta description
+  metaTitle   String? // override <title> SEO, nếu trống dùng "{name} — EduViet"
+  parentId    String?
+  parent      Category?  @relation("CategoryChildren", fields: [parentId], references: [id])
+  children    Category[] @relation("CategoryChildren")
+  courses     Course[]
+
+  @@index([parentId])
+}
+
+// Link tĩnh hiển thị trên thanh menu chính của header (ngoài mega menu danh mục), quản lý ở /admin/menu.
+model MenuItem {
+  id        String   @id @default(cuid())
+  label     String
+  url       String
+  order     Int      @default(0)
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+
+  @@index([order])
+}
+
+model Tag {
+  id      String   @id @default(cuid())
+  name    String
+  slug    String   @unique
+  courses Course[]
+}
+
+model Section {
+  id       String @id @default(cuid())
+  title    String
+  order    Int
+  courseId String
+  course   Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+  lessons Lesson[]
+
+  @@index([courseId])
+}
+
+model Lesson {
+  id             String     @id @default(cuid())
+  title          String
+  order          Int
+  type           LessonType @default(VIDEO)
+  youtubeVideoId String? // Phase 1 — video Unlisted trên YouTube
+  videoAssetId   String? // Phase 2 — Mux/Cloudflare Stream asset id
+  content        String? // nội dung tài liệu (DOCUMENT) hoặc mô tả quiz
+  durationSec    Int?
+  isPreview      Boolean    @default(false)
+  sectionId      String
+  section        Section    @relation(fields: [sectionId], references: [id], onDelete: Cascade)
+
+  progress  LessonProgress[]
+  questions Question[]
+  notes     LessonNote[]
+
+  @@index([sectionId])
+}
+
+enum LessonType {
+  VIDEO
+  DOCUMENT
+  QUIZ
+}
+
+// ─────────────────────────────────────────────
+// Enrollment & Progress
+// ─────────────────────────────────────────────
+
+model Enrollment {
+  id          String    @id @default(cuid())
+  userId      String
+  user        User      @relation(fields: [userId], references: [id])
+  courseId    String
+  course      Course    @relation(fields: [courseId], references: [id])
+  progressPct Int       @default(0)
+  completedAt DateTime?
+  certUrl     String?
+  purchasedAt DateTime  @default(now())
+
+  lessonProgress LessonProgress[]
+
+  @@unique([userId, courseId])
+  @@index([courseId])
+}
+
+model LessonProgress {
+  id              String     @id @default(cuid())
+  enrollmentId    String
+  enrollment      Enrollment @relation(fields: [enrollmentId], references: [id], onDelete: Cascade)
+  lessonId        String
+  lesson          Lesson     @relation(fields: [lessonId], references: [id])
+  completed       Boolean    @default(false)
+  lastPositionSec Int        @default(0)
+  updatedAt       DateTime   @updatedAt
+
+  @@unique([enrollmentId, lessonId])
+}
+
+model Wishlist {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  courseId  String
+  course    Course   @relation(fields: [courseId], references: [id])
+  createdAt DateTime @default(now())
+
+  @@unique([userId, courseId])
+}
+
+model LessonNote {
+  id           String   @id @default(cuid())
+  userId       String
+  user         User     @relation(fields: [userId], references: [id])
+  lessonId     String
+  lesson       Lesson   @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+  content      String
+  timestampSec Int?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@index([userId, lessonId])
+}
+
+// ─────────────────────────────────────────────
+// Reviews & Q&A
+// ─────────────────────────────────────────────
+
+model Review {
+  id        String   @id @default(cuid())
+  rating    Int // 1-5
+  comment   String?
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  courseId  String
+  course    Course   @relation(fields: [courseId], references: [id])
+  createdAt DateTime @default(now())
+
+  @@unique([userId, courseId])
+  @@index([courseId])
+}
+
+model Question {
+  id        String   @id @default(cuid())
+  content   String
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  lessonId  String
+  lesson    Lesson   @relation(fields: [lessonId], references: [id])
+  createdAt DateTime @default(now())
+  answers   Answer[]
+
+  @@index([lessonId])
+}
+
+model Answer {
+  id         String   @id @default(cuid())
+  content    String
+  questionId String
+  question   Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  userId     String
+  user       User     @relation(fields: [userId], references: [id])
+  createdAt  DateTime @default(now())
+}
+
+// ─────────────────────────────────────────────
+// Commerce
+// ─────────────────────────────────────────────
+
+model Coupon {
+  id          String    @id @default(cuid())
+  code        String    @unique
+  discountPct Int
+  expiresAt   DateTime?
+  maxUses     Int?
+  usedCount   Int       @default(0)
+  isActive    Boolean   @default(true)
+
+  orders Order[]
+}
+
+model Order {
+  id            String      @id @default(cuid())
+  userId        String
+  user          User        @relation(fields: [userId], references: [id])
+  totalAmount   Decimal     @db.Decimal(12, 0)
+  status        OrderStatus @default(PENDING)
+  paymentMethod String // VNPAY, MOMO, STRIPE
+  paymentRef    String?
+  couponId      String?
+  coupon        Coupon?     @relation(fields: [couponId], references: [id])
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+
+  items OrderItem[]
+
+  @@index([userId])
+  @@index([status])
+}
+
+enum OrderStatus {
+  PENDING
+  PAID
+  FAILED
+  REFUNDED
+}
+
+model OrderItem {
+  id       String  @id @default(cuid())
+  orderId  String
+  order    Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  courseId String
+  course   Course  @relation(fields: [courseId], references: [id])
+  price    Decimal @db.Decimal(12, 0)
+}
+
+model Withdrawal {
+  id           String           @id @default(cuid())
+  instructorId String
+  instructor   User             @relation(fields: [instructorId], references: [id])
+  amount       Decimal          @db.Decimal(12, 0)
+  status       WithdrawalStatus @default(PENDING)
+  note         String?
+  requestedAt  DateTime         @default(now())
+  processedAt  DateTime?
+
+  @@index([instructorId])
+}
+
+enum WithdrawalStatus {
+  PENDING
+  PAID
+  REJECTED
+}
+
+// ─────────────────────────────────────────────
+// Blog
+// ─────────────────────────────────────────────
+
+model BlogPost {
+  id              String     @id @default(cuid())
+  title           String
+  slug            String     @unique
+  excerpt         String
+  content         String
+  coverImageUrl   String?
+  status          BlogStatus @default(DRAFT)
+  metaTitle       String?
+  metaDescription String?
+  authorId        String
+  author          User       @relation(fields: [authorId], references: [id])
+  publishedAt     DateTime?
+  createdAt       DateTime   @default(now())
+  updatedAt       DateTime   @updatedAt
+
+  @@index([status])
+  @@index([authorId])
+}
+
+enum BlogStatus {
+  DRAFT
+  PUBLISHED
+}
+
+// ─────────────────────────────────────────────
+// Thư viện media (upload kéo-thả, dùng chung cho trình soạn thảo)
+// ─────────────────────────────────────────────
+
+model MediaAsset {
+  id           String   @id @default(cuid())
+  url          String
+  filename     String
+  mimeType     String
+  size         Int
+  uploadedById String
+  uploadedBy   User     @relation(fields: [uploadedById], references: [id])
+  createdAt    DateTime @default(now())
+
+  @@index([uploadedById])
+}
