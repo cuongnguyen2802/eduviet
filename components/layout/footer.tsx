@@ -25,16 +25,16 @@ export async function Footer() {
               {categories.map((cat) => (
                 <div key={cat.id}>
                   <p className="mb-4 font-semibold text-white">{cat.name}</p>
-                  <ul className="space-y-2.5 text-sm text-indigo-300/90">
+                  <ul className="space-y-2.5 text-sm text-slate-400">
                     {cat.children.map((child) => (
                       <li key={child.id}>
-                        <Link href={`/courses?category=${child.slug}`} className="hover:text-indigo-200 hover:underline">
+                        <Link href={`/courses?category=${child.slug}`} className="hover:text-primary hover:underline">
                           {child.name}
                         </Link>
                       </li>
                     ))}
                     <li>
-                      <Link href={`/courses?category=${cat.slug}`} className="font-medium text-white hover:underline">
+                      <Link href={`/courses?category=${cat.slug}`} className="font-medium text-primary hover:underline">
                         Xem tất cả
                       </Link>
                     </li>
