@@ -46,11 +46,11 @@ export async function Footer() {
         </div>
       )}
 
-      <div className="bg-secondary/40">
+      <div className="border-t border-slate-800 bg-slate-900">
         <div className="container grid grid-cols-2 gap-8 py-12 sm:grid-cols-4">
           <div>
-            <p className="font-semibold mb-3">Học viên</p>
-            <ul className="space-y-2 text-sm text-muted-foreground">
+            <p className="font-semibold mb-3 text-white">Học viên</p>
+            <ul className="space-y-2 text-sm text-slate-400">
               <li><Link href="/courses" className="hover:text-primary">Tất cả khóa học</Link></li>
               <li><Link href="/dashboard" className="hover:text-primary">Khóa học của tôi</Link></li>
               <li><Link href="/dashboard/wishlist" className="hover:text-primary">Yêu thích</Link></li>
@@ -60,8 +60,8 @@ export async function Footer() {
           </div>
 
           <div>
-            <p className="font-semibold mb-3">Giảng viên</p>
-            <ul className="space-y-2 text-sm text-muted-foreground">
+            <p className="font-semibold mb-3 text-white">Giảng viên</p>
+            <ul className="space-y-2 text-sm text-slate-400">
               <li><Link href="/become-instructor" className="hover:text-primary">Trở thành giảng viên</Link></li>
               <li><Link href="/instructor/dashboard" className="hover:text-primary">Kênh giảng viên</Link></li>
               <li><Link href="/instructor/revenue" className="hover:text-primary">Doanh thu & rút tiền</Link></li>
@@ -69,36 +69,34 @@ export async function Footer() {
           </div>
 
           <div>
-            <p className="font-semibold mb-3">Công ty</p>
-            <ul className="space-y-2 text-sm text-muted-foreground">
+            <p className="font-semibold mb-3 text-white">Công ty</p>
+            <ul className="space-y-2 text-sm text-slate-400">
               <li><Link href="/gioi-thieu" className="hover:text-primary">Về chúng tôi</Link></li>
               <li><Link href="/lien-he" className="hover:text-primary">Liên hệ</Link></li>
             </ul>
           </div>
 
           <div>
-            <p className="font-semibold mb-3">Pháp lý</p>
-            <ul className="space-y-2 text-sm text-muted-foreground">
+            <p className="font-semibold mb-3 text-white">Pháp lý</p>
+            <ul className="space-y-2 text-sm text-slate-400">
               <li><Link href="/sitemap.xml" className="hover:text-primary">Sitemap</Link></li>
-              <li className="text-muted-foreground/60">Điều khoản sử dụng</li>
-              <li className="text-muted-foreground/60">Chính sách bảo mật</li>
+              <li className="text-slate-600">Điều khoản sử dụng</li>
+              <li className="text-slate-600">Chính sách bảo mật</li>
             </ul>
           </div>
         </div>
       </div>
 
-      <div className="border-t">
+      <div className="border-t border-slate-800 bg-slate-900">
         <div className="container flex flex-col items-center gap-4 py-6 sm:flex-row sm:justify-between">
           <div className="flex flex-col items-center gap-3 sm:items-start">
-            <SiteLogo logoUrl={settings.logoUrl} />
-            <p className="max-w-xs text-center text-xs text-muted-foreground sm:text-left">
-              {settings.footerDescription}
-            </p>
+            <SiteLogo logoUrl={settings.logoUrl} className="flex items-center gap-2 font-bold text-lg text-white" />
+            <p className="max-w-xs text-center text-xs text-slate-400 sm:text-left">{settings.footerDescription}</p>
           </div>
 
           <div className="flex flex-col items-center gap-3 sm:items-end">
             {(settings.socialFacebook || settings.socialYoutube || settings.socialZalo) && (
-              <div className="flex gap-3 text-muted-foreground">
+              <div className="flex gap-3 text-slate-400">
                 {settings.socialFacebook && (
                   <Link href={settings.socialFacebook} target="_blank" aria-label="Facebook" className="hover:text-primary">
                     <Facebook className="h-5 w-5" />
@@ -116,7 +114,7 @@ export async function Footer() {
                 )}
               </div>
             )}
-            <div className="flex items-center gap-3 text-xs text-muted-foreground">
+            <div className="flex items-center gap-3 text-xs text-slate-500">
               <p>© {new Date().getFullYear()} EduViet. All rights reserved.</p>
               <span>•</span>
               <p>Made in Việt Nam</p>
