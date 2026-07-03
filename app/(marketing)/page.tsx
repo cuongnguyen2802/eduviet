@@ -184,11 +184,11 @@ export default async function HomePage() {
       <section className="relative overflow-hidden bg-secondary/30">
         <HeroSlider images={heroImages} />
         <div className="container relative z-10 grid min-h-[420px] gap-8 py-20 md:grid-cols-2 items-center">
-          <div className="rounded-2xl bg-background/70 p-6 backdrop-blur-sm md:bg-transparent md:p-0 md:backdrop-blur-none">
-            <h1 className="text-4xl md:text-5xl font-bold leading-tight drop-shadow-sm">
+          <div className="rounded-2xl bg-background/85 p-6 shadow-xl backdrop-blur-sm md:p-8">
+            <h1 className="text-4xl md:text-5xl font-bold leading-tight">
               Học kỹ năng mới, <span className="text-primary">mua trọn đời</span>, học theo tốc độ của bạn
             </h1>
-            <p className="mt-4 text-lg text-muted-foreground">
+            <p className="mt-4 text-lg text-foreground/70">
               Hàng nghìn khóa học video từ các chuyên gia hàng đầu Việt Nam. Học mọi lúc, mọi nơi, trên mọi thiết bị.
             </p>
             <div className="mt-8 flex gap-4">

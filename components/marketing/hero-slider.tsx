@@ -33,8 +33,8 @@ export function HeroSlider({ images }: { images: string[] }) {
         </div>
       ))}
 
-      <div className="absolute inset-0 bg-gradient-to-r from-background/60 via-background/20 to-transparent" />
-      <div className="absolute inset-0 bg-gradient-to-t from-background/50 via-transparent to-transparent" />
+      <div className="absolute inset-0 bg-gradient-to-r from-background/70 via-background/30 to-transparent" />
+      <div className="absolute inset-0 bg-gradient-to-t from-background/40 via-transparent to-transparent" />
 
       {images.length > 1 && (
         <div className="absolute bottom-6 left-1/2 flex -translate-x-1/2 gap-2">
