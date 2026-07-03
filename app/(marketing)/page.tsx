@@ -4,10 +4,12 @@ import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { CourseCard } from "@/components/course/course-card";
 import { HeroSlider } from "@/components/marketing/hero-slider";
+import { CopyCouponButton } from "@/components/marketing/copy-coupon-button";
 import { BlockList } from "@/components/page-builder/block-renderer";
 import type { PageBlock } from "@/lib/blocks";
 import {
   ArrowRight,
+  Tag,
   BookOpen,
   Users,
   GraduationCap,
@@ -145,6 +147,18 @@ async function getFeaturedInstructors() {
     .sort((a, b) => b.studentCount - a.studentCount);
 }
 
+async function getActivePromotions() {
+  const coupons = await prisma.coupon.findMany({
+    where: {
+      isActive: true,
+      OR: [{ expiresAt: null }, { expiresAt: { gt: new Date() } }],
+    },
+    orderBy: { discountPct: "desc" },
+  });
+
+  return coupons.filter((c) => c.maxUses === null || c.usedCount < c.maxUses).slice(0, 3);
+}
+
 async function getTestimonials() {
   const reviews = await prisma.review.findMany({
     where: { rating: { gte: 4 }, comment: { not: null } },
@@ -187,15 +201,17 @@ const benefits = [
 ];
 
 export default async function HomePage() {
-  const [courses, categories, stats, instructors, heroImages, customBlocks, testimonials] = await Promise.all([
-    getFeaturedCourses(),
-    getCategories(),
-    getStats(),
-    getFeaturedInstructors(),
-    getHeroImages(),
-    getHomepageCustomBlocks(),
-    getTestimonials(),
-  ]);
+  const [courses, categories, stats, instructors, heroImages, customBlocks, testimonials, promotions] =
+    await Promise.all([
+      getFeaturedCourses(),
+      getCategories(),
+      getStats(),
+      getFeaturedInstructors(),
+      getHeroImages(),
+      getHomepageCustomBlocks(),
+      getTestimonials(),
+      getActivePromotions(),
+    ]);
 
   return (
     <div>
@@ -233,6 +249,25 @@ export default async function HomePage() {
           <StatItem icon={Star} value={stats.avgRating ? stats.avgRating.toFixed(1) : "—"} label="Đánh giá trung bình" />
         </div>
       </section>
+
+      {promotions.length > 0 && (
+        <section className="border-b bg-primary/5">
+          <div className="container flex flex-wrap items-center gap-x-6 gap-y-3 py-4">
+            <div className="flex items-center gap-2 font-semibold text-primary shrink-0">
+              <Tag className="h-4 w-4" />
+              Ưu đãi đang diễn ra
+            </div>
+            {promotions.map((coupon) => (
+              <div key={coupon.id} className="flex items-center gap-2 text-sm">
+                <span className="text-muted-foreground">
+                  Giảm <span className="font-semibold text-foreground">{coupon.discountPct}%</span> với mã
+                </span>
+                <CopyCouponButton code={coupon.code} />
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
 
       <section className="container py-14">
         <h2 className="text-2xl font-bold mb-6">Danh mục nổi bật</h2>
