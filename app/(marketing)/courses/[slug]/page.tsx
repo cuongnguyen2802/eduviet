@@ -221,8 +221,8 @@ export default async function CourseDetailPage({ params }: { params: { slug: str
           </section>
         </div>
 
-        <div className="lg:col-start-3 space-y-4 lg:-mt-64">
-          <div className="rounded-lg border bg-background overflow-hidden shadow-lg sticky top-20">
+        <div className="lg:col-start-3 space-y-4">
+          <div className="rounded-lg border bg-background overflow-hidden shadow-lg sticky top-20 lg:-mt-64">
             {previewLesson?.youtubeVideoId ? (
               <VideoPlayer youtubeVideoId={previewLesson.youtubeVideoId} />
             ) : (
